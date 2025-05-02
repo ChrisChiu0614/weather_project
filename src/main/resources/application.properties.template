@@ -1,0 +1,11 @@
+##################
+##     System   ##
+##################
+spring.application.name=weather-backend
+server.port=8080
+
+##################
+## Open weather ##
+##################
+weather.api.key=
+weather.api.url=https://api.openweathermap.org/data/2.5/weather
