@@ -1,7 +1,6 @@
 package com.chris.weatherBackend.model;
 
 
-import com.chris.weatherBackend.dto.Main;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
