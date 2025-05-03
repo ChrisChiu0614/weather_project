@@ -19,6 +19,8 @@ steps:
       cliProjectKey: 'weather_project'
       cliProjectName: 'weather_project'
       cliSources: 'src'
+      extraProperties: |
+        sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
   - task: Maven@4
     inputs:
