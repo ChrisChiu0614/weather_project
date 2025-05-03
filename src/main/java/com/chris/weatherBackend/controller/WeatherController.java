@@ -21,7 +21,7 @@ public class WeatherController {
     @GetMapping
     public ResponseEntity<WeatherDTO> getWeather(@RequestParam(defaultValue = "Taipei") String city) {
         WeatherDTO weather = weatherService.getWeather(city);
-        //
+
         return ResponseEntity.ok(weather);
     }
 }
