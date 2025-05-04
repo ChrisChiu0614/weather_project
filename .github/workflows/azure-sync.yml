@@ -18,4 +18,5 @@ jobs:
           git config --global user.name "Chris"
           git config --global user.email "chris820614@gmail.com"
           git remote add azure https://chris820614:${{ secrets.AZURE_PAT }}@dev.azure.com/chris820614/Weather%20Query/_git/weather_project.git
-          git push azure HEAD:main
+          git push azure HEAD:main --force
+
