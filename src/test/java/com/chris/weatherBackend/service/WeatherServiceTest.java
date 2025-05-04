@@ -7,6 +7,10 @@ import com.chris.weatherBackend.model.WeatherResponse;
 import com.chris.weatherBackend.model.WeatherResponse.Weather;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
@@ -19,9 +23,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class WeatherServiceTest {
-    private WeatherService weatherService;
+
+    @Mock
     private RestTemplate restTemplate;
+
+    @InjectMocks
+    private WeatherService weatherService;
 
     @Value("${weather.api.key}")
     private String apiKey;
@@ -31,88 +40,139 @@ public class WeatherServiceTest {
 
     @BeforeEach
     void setUp() {
-        restTemplate = mock(RestTemplate.class);
         weatherService = new WeatherService(restTemplate);
 
     }
 
-    @Test
-    void testGetWeather_Success() {
-        WeatherResponse mockResponse = new WeatherResponse();
-        mockResponse.setCod(200);
-        mockResponse.setName("Taipei");
+    private WeatherResponse getMockResponse(){
+        WeatherResponse response = new WeatherResponse();
+
+        response.setName("Taipei");
 
         WeatherResponse.Main main = new WeatherResponse.Main();
-        main.setTemp(28);
-        main.setTempMin(25);
-        main.setTempMax(30);
-        mockResponse.setMain(main);
+        main.setTemp(11.2);
+        response.setMain(main);
 
         WeatherResponse.Weather weather = new WeatherResponse.Weather();
-        weather.setDescription("晴天");
-        weather.setIcon("01d");
-        mockResponse.setWeather(new WeatherResponse.Weather[]{weather});
+        weather.setDescription("clear sky");
+        response.setWeather(new Weather[]{weather});
 
         WeatherResponse.Rain rain = new WeatherResponse.Rain();
         rain.set_1h(0.5);
-        mockResponse.setRain(rain);
+        response.setRain(rain);
+        response.setCod(200);
 
-        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenReturn(mockResponse);
-
-        WeatherDTO dto = weatherService.getWeather("Taipei");
-
-        assertEquals("Taipei", dto.getCity());
-        assertEquals(28, dto.getTemperature());
-        assertEquals("晴天", dto.getDescription());
-        assertEquals("01d", dto.getIcon());
-        assertEquals(0.5, dto.getRainfall());
-        assertEquals("建議帶傘，預計有降雨！", dto.getUmbrellaAdvice());
-        assertEquals("天氣炎熱，穿短袖清涼一點！", dto.getClothingAdvice());
+        return response;
     }
 
     @Test
-    void testGetWeather_CityNotFound() {
-        HttpClientErrorException exception = HttpClientErrorException.create(HttpStatus.NOT_FOUND, "Not Found", null, null, null);
-        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenThrow(exception);
+    void testGetWeatherSuccess(){
+        WeatherResponse response = getMockResponse();
 
-        assertThrows(CityNotFoundException.class, () -> weatherService.getWeather("UnknownCity"));
+        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenReturn(response);
+
+        WeatherDTO result = weatherService.getWeather("Taipei");
+
+        assertEquals("Taipei", result.getCity());
+        assertEquals(11.2, result.getTemperature());
+        assertEquals("clear sky", result.getDescription());
+        assertEquals(0.5, result.getRainfall());
+        assertEquals("建議帶傘，預計有降雨！", result.getUmbrellaAdvice());
+        assertEquals("天氣較冷，建議穿外套或毛衣。", result.getClothingAdvice());
+
     }
 
     @Test
-    void testGetWeather_OtherHttpError() {
-        HttpClientErrorException exception = HttpClientErrorException.create(HttpStatus.INTERNAL_SERVER_ERROR, "Error", null, null, null);
-        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenThrow(exception);
+    void testGetWeatherThrowException404(){
+        WeatherResponse response = getMockResponse();
+        response.setCod(404);
+        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenReturn(response);
 
-        assertThrows(ExternalApiException.class, () -> weatherService.getWeather("SomeCity"));
+        assertThrows(ExternalApiException.class,()->{
+            weatherService.getWeather("Taipei");
+        });
+
     }
 
     @Test
-    void testGetWeather_NullResponse() {
-        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenReturn(null);
-        assertThrows(RuntimeException.class, () -> weatherService.getWeather("Taipei"));
+    void testGetWeatherThrowCityNotFoundException(){
+        HttpClientErrorException httpClientErrorException = new HttpClientErrorException(
+                HttpStatus.NOT_FOUND,
+                "not found",
+                null,
+                null,
+                null
+        );
+
+        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenThrow(httpClientErrorException);
+
+        assertThrows(CityNotFoundException.class,()->{
+            weatherService.getWeather("Taipei");
+        });
+
     }
 
     @Test
-    void testGetWeather_NullWeatherArray() {
-        WeatherResponse mockResponse = new WeatherResponse();
-        mockResponse.setCod(200);
-        mockResponse.setMain(new WeatherResponse.Main());
-        mockResponse.setName("Taipei");
-        mockResponse.setWeather(null);
-        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenReturn(mockResponse);
+    void testGetWeatherThrowCityExternalApiException(){
+        HttpClientErrorException httpClientErrorException = new HttpClientErrorException(
+                HttpStatus.BAD_REQUEST,
+                "API request failed",
+                null,
+                null,
+                null
+        );
 
-        assertThrows(RuntimeException.class, () -> weatherService.getWeather("Taipei"));
+        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenThrow(httpClientErrorException);
+
+        assertThrows(ExternalApiException.class,()->{
+            weatherService.getWeather("Taipei");
+        });
+
     }
 
     @Test
-    void testGetWeather_WrongCod() {
-        WeatherResponse mockResponse = new WeatherResponse();
-        mockResponse.setCod(500);
-        mockResponse.setMain(new WeatherResponse.Main());
-        mockResponse.setWeather(new Weather[]{new Weather()});
-        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenReturn(mockResponse);
+    void testRainfallAdviceWillRaining(){
+        WeatherResponse response = getMockResponse();
+        response.getRain().set_1h(0.5);
+        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenReturn(response);
+        WeatherDTO result = weatherService.getWeather("Taipei");
+        assertEquals("建議帶傘，預計有降雨！", result.getUmbrellaAdvice());
+    }
 
-        assertThrows(RuntimeException.class, () -> weatherService.getWeather("Taipei"));
+    @Test
+    void testRainfallAdviceWontRaining(){
+        WeatherResponse response = getMockResponse();
+        response.getRain().set_1h(0.1);
+        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenReturn(response);
+        WeatherDTO result = weatherService.getWeather("Taipei");
+        assertEquals("今天應該不用帶傘。", result.getUmbrellaAdvice());
+    }
+
+    @Test
+    void testClothingAdviceWillBeCold(){
+        WeatherResponse response = getMockResponse();
+        response.getMain().setTemp(14);
+        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenReturn(response);
+        WeatherDTO result = weatherService.getWeather("Taipei");
+        assertEquals("天氣較冷，建議穿外套或毛衣。", result.getClothingAdvice());
+    }
+
+    @Test
+    void testClothingAdviceWillBeWarm(){
+        WeatherResponse response = getMockResponse();
+        response.getMain().setTemp(24);
+        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenReturn(response);
+        WeatherDTO result = weatherService.getWeather("Taipei");
+        assertEquals("天氣舒適，穿長袖或薄外套即可。", result.getClothingAdvice());
+    }
+
+    @Test
+    void testClothingAdviceWillBeHot(){
+        WeatherResponse response = getMockResponse();
+        response.getMain().setTemp(30);
+        when(restTemplate.getForObject(anyString(), eq(WeatherResponse.class))).thenReturn(response);
+        WeatherDTO result = weatherService.getWeather("Taipei");
+        assertEquals("天氣炎熱，穿短袖清涼一點！", result.getClothingAdvice());
     }
 
 }

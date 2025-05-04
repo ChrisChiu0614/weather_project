@@ -33,7 +33,7 @@ public class WeatherService {
             WeatherResponse response = restTemplate.getForObject(url, WeatherResponse.class);
 
             if (response == null || response.getWeather() == null || response.getCod() != 200) {
-                throw new RuntimeException("無法獲取天氣數據");
+                throw new ExternalApiException("回傳資料異常，無法獲取天氣數據");
             }
 
             return getWeatherDTO(response);
