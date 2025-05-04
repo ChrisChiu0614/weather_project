@@ -1,0 +1,21 @@
+name: Sync to Azure DevOps
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync-to-azure:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitHub Repo
+        uses: actions/checkout@v3
+
+      - name: Push code to Azure DevOps Repo
+        run: |
+          git config --global user.name "Chris"
+          git config --global user.email "chris820614@gmail.com"
+          git remote add azure https://chris820614:${{ secrets.AZURE_PAT }}@dev.azure.com/chris820614/Weather%20Query/_git/weather_project.git
+          git push azure HEAD:main

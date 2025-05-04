@@ -28,7 +28,7 @@ steps:
       mavenPomFile: 'pom.xml'
       mavenOptions: '-Xmx3072m'
       javaHomeOption: 'Path'
-      jdkDirectory: '/Library/Java/JavaVirtualMachines/openjdk-17.jdk/Contents/Home'  # ✅ macOS 上 JDK 17 的路徑（由你 ln -s 建立的）
+      jdkDirectory: '/Library/Java/JavaVirtualMachines/openjdk-17.jdk/Contents/Home'
       jdkArchitectureOption: 'x64'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
