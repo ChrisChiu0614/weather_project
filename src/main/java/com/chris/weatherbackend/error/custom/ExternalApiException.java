@@ -1,4 +1,4 @@
-package com.chris.weatherBackend.error.custom;
+package com.chris.weatherbackend.error.custom;
 
 public class ExternalApiException extends RuntimeException {
     public ExternalApiException(String message) {

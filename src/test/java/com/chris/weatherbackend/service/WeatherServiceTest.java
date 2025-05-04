@@ -1,10 +1,10 @@
-package com.chris.weatherBackend.service;
+package com.chris.weatherbackend.service;
 
-import com.chris.weatherBackend.dto.WeatherDTO;
-import com.chris.weatherBackend.error.custom.CityNotFoundException;
-import com.chris.weatherBackend.error.custom.ExternalApiException;
-import com.chris.weatherBackend.model.WeatherResponse;
-import com.chris.weatherBackend.model.WeatherResponse.Weather;
+import com.chris.weatherbackend.dto.WeatherDTO;
+import com.chris.weatherbackend.error.custom.CityNotFoundException;
+import com.chris.weatherbackend.error.custom.ExternalApiException;
+import com.chris.weatherbackend.model.WeatherResponse;
+import com.chris.weatherbackend.model.WeatherResponse.Weather;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import java.lang.reflect.InvocationTargetException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

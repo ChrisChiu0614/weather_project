@@ -1,4 +1,4 @@
-package com.chris.weatherBackend.dto;
+package com.chris.weatherbackend.dto;
 
 import lombok.Data;
 

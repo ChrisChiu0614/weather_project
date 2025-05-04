@@ -1,9 +1,9 @@
-package com.chris.weatherBackend.error;
+package com.chris.weatherbackend.error;
 
-import com.chris.weatherBackend.dto.ErrorResponse;
-import com.chris.weatherBackend.error.custom.CityNotFoundException;
-import com.chris.weatherBackend.error.custom.ExternalApiException;
-import com.chris.weatherBackend.error.custom.InvalidParameterException;
+import com.chris.weatherbackend.dto.ErrorResponse;
+import com.chris.weatherbackend.error.custom.CityNotFoundException;
+import com.chris.weatherbackend.error.custom.ExternalApiException;
+import com.chris.weatherbackend.error.custom.InvalidParameterException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

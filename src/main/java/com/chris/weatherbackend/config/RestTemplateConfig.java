@@ -1,4 +1,4 @@
-package com.chris.weatherBackend.config;
+package com.chris.weatherbackend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

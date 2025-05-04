@@ -1,7 +1,7 @@
-package com.chris.weatherBackend.controller;
+package com.chris.weatherbackend.controller;
 
-import com.chris.weatherBackend.dto.WeatherDTO;
-import com.chris.weatherBackend.service.WeatherService;
+import com.chris.weatherbackend.dto.WeatherDTO;
+import com.chris.weatherbackend.service.WeatherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

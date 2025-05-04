@@ -1,4 +1,4 @@
-package com.chris.weatherBackend.model;
+package com.chris.weatherbackend.model;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

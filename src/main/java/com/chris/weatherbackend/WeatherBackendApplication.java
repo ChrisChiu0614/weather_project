@@ -1,4 +1,4 @@
-package com.chris.weatherBackend;
+package com.chris.weatherbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
